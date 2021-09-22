@@ -11,17 +11,21 @@
 
 #pragma once
 
+#include <string>
+
 #include <boost/asio.hpp>
 
 class comport
 {
 public:
-    comport(/* args */);
+    comport(std::string port, unsigned int baud_rate);
     ~comport();
 
     bool is_connected() const;
 
 private:
+    boost::asio::io_service io;
+    boost::asio::serial_port serial;
     bool m_connected = false;
 };
 

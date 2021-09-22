@@ -1,18 +1,14 @@
 /**
  * @file comport.cpp
- * @author your name (you@domain.com)
  * @brief 
- * @version 0.1
- * @date 2021-09-22
- * 
- * @copyright Copyright (c) 2021
- * 
  */
 
 #include "comport.h"
 
-comport::comport(/* args */)
+comport::comport(std::string port, unsigned int baud_rate)
+    : io(), serial(io, port)
 {
+    serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
 }
 
 comport::~comport()
