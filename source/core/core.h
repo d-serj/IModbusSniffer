@@ -11,6 +11,8 @@
 
 #include <utilities/event/event.h>
 
+#include "comport.h"
+
 class Core
 {
 public:
@@ -22,6 +24,7 @@ public:
 private:
     std::thread m_thread;
     bool m_core_stop = false;
+    Comport comport;
 
     /**
      * Event handlers.
@@ -30,10 +33,10 @@ private:
     /**
      * @brief MQTT login event.
      */
-    static void comport_connect(EventConnect *event);
+    static void comport_connect(std::shared_ptr<Event> event);
 
     /**
      * @brief Application exit event.
      */
-    static void exit(EventApplicationExit *event);
+    static void exit(std::shared_ptr<Event> event);
 };

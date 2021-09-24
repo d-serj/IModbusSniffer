@@ -22,8 +22,10 @@ public:
     void draw_menu() override;
 
 private:
-    std::array<char, 64> m_port_name{ 0 };
     bool m_connected = false;
+    int m_item_current = 0;
+
+    void draw_connection_window();
 };
 
 #endif // VIEW_LOGIN_H_
