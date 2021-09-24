@@ -12,20 +12,24 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 #include <boost/asio.hpp>
 
-class comport
+class Comport
 {
 public:
-    comport(std::string port, unsigned int baud_rate);
-    ~comport();
+    Comport();
+    Comport(const std::string &port, uint32_t baud_rate);
+    ~Comport();
 
-    bool is_connected() const;
+    bool is_opened() const;
+    void open(const std::string &port, uint32_t baud_rate);
 
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;
     bool m_connected = false;
-};
 
+    void set_serial_default_opts(boost::asio::serial_port &serial);
+};
