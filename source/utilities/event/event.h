@@ -1,46 +1,42 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
-enum class EventType { eEvent_Connect, eEvent_AppExit };
+enum class EventType { eEvent_Connect, eEventPortClose, eEvent_AppExit };
 
 class Event
 {
 public:
     Event() { };
     virtual ~Event() { };
-
-    /**
-     * @brief Clear the event, deallocated the memory.
-     * @warning Must be called in all of event handlers after event handled!
-     */
-    void clear();
 };
 
 /**
- * @brief EventApplicationExit application exit event
+ * @brief EventPortOpen class is an event that passed login and password to the backend.
  */
-class EventApplicationExit : public Event
+class EventPortOpen : public Event
 {
 public:
-    explicit EventApplicationExit() = default;
-};
-
-/**
- * @brief EventConnect class is an event that passed login and password to the backend.
- */
-class EventConnect : public Event
-{
-public:
-    explicit EventConnect(const std::string& portname, const std::string& password)
-        : Event(), m_portname(portname), m_passpord(password)
+    explicit EventPortOpen(const std::string& portname, uint32_t baudrate)
+        : Event(), m_portname(portname), m_baudrate(baudrate)
     {
     };
 
-    const std::string& get_username() const;
-    const std::string& get_password() const;
+    const std::string& get_port_name() const;
+    uint32_t get_baudrate() const;
 
 private:
     std::string m_portname;
-    std::string m_passpord;
+    uint32_t m_baudrate;
+    char test[1024];
+};
+
+/**
+ * @brief EventPortClose event to close serial port
+ */
+class EventPortClose : public Event
+{
+public:
+    explicit EventPortClose() = default;
 };

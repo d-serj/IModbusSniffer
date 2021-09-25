@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <fmt/format.h>
 #include <imgui.h>
@@ -34,17 +35,29 @@ void ViewConnection::draw()
         return;
     }
 
-    std::string comports;
+    const char port_none[] = "<none>";
+    std::string comports_formatted{ port_none, IM_ARRAYSIZE(port_none) };
+    std::vector<std::string> comports{port_none};
     CEnumerateSerial::CPortsArray ports;
+
+    int ports_num = 0;
     if (CEnumerateSerial::UsingGetCommPorts(ports))
     {
         for (const auto& port : ports)
         {
             // Create 
-            const std::string null_term = fmt::format("COM{}", port);
-            const std::string formated{null_term.c_str(), null_term.size() + 1};
-            comports += formated;
+            const std::string entity = fmt::format("COM{}", port);
+            comports.emplace_back(entity);
+            // Insert with \0 terminator to be drawn on combo box
+            comports_formatted += {entity.c_str(), entity.size() + 1};
+            ++ports_num;
         }
+    }
+
+    if (m_item_current > ports_num)
+    {
+        m_item_current = 0;
+        m_connected    = false;
     }
 
     const ImGuiWindowFlags windowFlags =
@@ -55,22 +68,54 @@ void ViewConnection::draw()
         | ImGuiWindowFlags_NoScrollbar
         | ImGuiWindowFlags_NoScrollWithMouse;
 
-    ImGui::SetNextWindowSize(ImVec2(280, 180), ImGuiCond_Appearing);
+    ImGui::SetNextWindowSize(ImVec2(280, 220), ImGuiCond_Appearing);
 
-    ImGui::Begin("COM Port", &View::get_view_open_state(), windowFlags);
-
-    static int item_current = 0;
-    ImGui::Combo("COM Port name", &item_current, comports.c_str(), comports.size());
-
-    if (ImGui::Button("Connect"))
+    if (ImGui::Begin("COM Port settings", &View::get_view_open_state(), windowFlags))
     {
-        const std::string user_name = m_port_name.data();
-        const std::string password  = m_port_name.data();
+        if (m_connected || (ports_num == 0))
+        {
+            ImGui::BeginDisabled();
+        }
 
-        EventManager::post(EventType::eEvent_Connect, new EventConnect{ user_name, password });
+        ImGui::Combo("Port name", &m_item_current, comports_formatted.c_str(), comports_formatted.size());
+
+        if (m_connected || (ports_num == 0))
+        {
+            ImGui::EndDisabled();
+        }
+
+        if ((m_item_current == 0) || m_connected)
+        {
+            ImGui::BeginDisabled();
+            ImGui::Button("Connect");
+            ImGui::EndDisabled();
+        }
+        else if (ImGui::Button("Connect"))
+        {
+            std::shared_ptr<EventPortOpen> ptr_orig(new EventPortOpen{ comports.at(m_item_current), 57600 });
+            std::shared_ptr<Event> ptr = std::dynamic_pointer_cast<Event>(ptr_orig);
+            EventManager::post(EventType::eEvent_Connect, ptr);
+            m_connected = true;
+        }
+
+        ImGui::SameLine();
+        ImGui::Separator();
+        ImGui::SameLine();
+
+        if (!m_connected)
+        {
+            ImGui::BeginDisabled();
+            ImGui::Button("Disconnect");
+            ImGui::EndDisabled();
+        }
+        else if (ImGui::Button("Disconnect"))
+        {
+
+            m_connected = false;
+        }
+
+        ImGui::End();
     }
-
-    ImGui::End();
 
     ImGui::ShowDemoWindow();
 }
@@ -86,4 +131,9 @@ void ViewConnection::draw_menu()
         
         ImGui::EndMenu();
     }
+}
+
+void ViewConnection::draw_connection_window()
+{
+
 }

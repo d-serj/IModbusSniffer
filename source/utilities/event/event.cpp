@@ -7,17 +7,12 @@
 
 #include <string>
 
-void Event::clear()
-{
-    delete this;
-}
-
-const std::string& EventConnect::get_username() const
+const std::string& EventPortOpen::get_port_name() const
 {
     return this->m_portname;
 }
 
-const std::string& EventConnect::get_password() const
+uint32_t EventPortOpen::get_baudrate() const
 {
-    return m_passpord;
+    return this->m_baudrate;
 }

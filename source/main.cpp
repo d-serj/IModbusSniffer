@@ -16,8 +16,6 @@ int main(int, char**)
     Core app;
     app.start_thread();
 
-
-
     Window Ui;
     Ui.loop();
 

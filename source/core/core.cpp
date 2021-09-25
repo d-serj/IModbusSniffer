@@ -11,9 +11,10 @@
 #include <utilities/event/event_manager.h>
 
 Core::Core()
+    : comport()
 {
-    EventManager::subscribe(EventType::eEvent_Connect,   eventpp::argumentAdapter(Core::comport_connect));
-    EventManager::subscribe(EventType::eEvent_AppExit, eventpp::argumentAdapter(Core::exit));
+    EventManager::subscribe(EventType::eEvent_Connect, Core::comport_connect);
+    EventManager::subscribe(EventType::eEvent_AppExit, Core::exit);
 }
 
 Core::~Core()
@@ -34,14 +35,14 @@ void Core::start_thread()
     }) };
 }
 
-void Core::comport_connect(EventConnect *event)
+void Core::comport_connect(std::shared_ptr<Event> event)
 {
+    std::shared_ptr<EventPortOpen> port = std::dynamic_pointer_cast<EventPortOpen>(event);
     // TODO investigate how can we initialize MQTT in static function
-    
-    event->clear();
+
 }
 
-void Core::exit(EventApplicationExit* event)
+void Core::exit(std::shared_ptr<Event> event)
 {
     // TODO clear all resources and exit
 }
