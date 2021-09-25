@@ -24,7 +24,6 @@ target_sources(
   window.cpp
   view/view.h
   view/view.cpp
-  "comport.cpp"                     "comport.h"
   "view/view_connection.cpp"        "view/view_connection.h"
   "view/views_pool.h"               "view/views_pool.cpp"
   "content.cpp"                     "content.h"
@@ -34,6 +33,7 @@ target_sources(
   "utilities/enumser.cpp"           "utilities/enumser.h"
 
   "core/core.h"                     "core/core.cpp"
+  "core/comport.cpp"                "core/comport.h"
 )
 
 set(Boost_DEBUG 1)
