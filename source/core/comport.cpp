@@ -26,11 +26,7 @@ Comport::Comport(const std::string &port, uint32_t baud_rate)
 
 Comport::~Comport()
 {
-    if (serial.is_open())
-    {
-        serial.close();
-        m_connected = false;
-    }
+    close();
 }
 
 void Comport::open(const std::string &port, uint32_t baud_rate)
@@ -54,9 +50,27 @@ void Comport::open(const std::string &port, uint32_t baud_rate)
         GetCommTimeouts(native_handle, &timeouts);
         std::cout << timeouts.ReadIntervalTimeout << std::endl;
 #endif // WIN32
-    } catch(boost::system::system_error& e)
+    }
+    catch(boost::system::system_error& e)
     {
-        std::cout << "Error: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+void Comport::close()
+{
+    if (serial.is_open())
+    {
+        try
+        {
+            serial.close();
+        }
+        catch(boost::system::system_error& e)
+        {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
+
+        m_connected = false;
     }
 }
 

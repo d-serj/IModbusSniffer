@@ -5,6 +5,9 @@
 
 enum class EventType { eEvent_Connect, eEventPortClose, eEvent_AppExit };
 
+/**
+ * @brief Base event class
+ */
 class Event
 {
 public:
@@ -30,13 +33,4 @@ private:
     std::string m_portname;
     uint32_t m_baudrate;
     char test[1024];
-};
-
-/**
- * @brief EventPortClose event to close serial port
- */
-class EventPortClose : public Event
-{
-public:
-    explicit EventPortClose() = default;
 };

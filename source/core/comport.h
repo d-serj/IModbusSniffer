@@ -26,6 +26,11 @@ public:
     bool is_opened() const;
     void open(const std::string &port, uint32_t baud_rate);
 
+    /**
+     * @brief Close serial port
+     */
+    void close();
+
 private:
     boost::asio::io_service io;
     boost::asio::serial_port serial;

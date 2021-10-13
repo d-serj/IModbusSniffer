@@ -31,12 +31,20 @@ private:
      */
 
     /**
-     * @brief MQTT login event.
+     * @brief Serial port open event handler
+     * @param event event data
      */
-    static void comport_connect(std::shared_ptr<Event> event);
+    void comport_connect(std::shared_ptr<Event> event);
+
+    /**
+     * @brief Serial port close event handler
+     * @param event event data
+     */
+    void comport_close(std::shared_ptr<Event> event);
 
     /**
      * @brief Application exit event.
+     * @param event event data
      */
-    static void exit(std::shared_ptr<Event> event);
+    void exit(std::shared_ptr<Event> event);
 };

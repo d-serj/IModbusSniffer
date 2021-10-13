@@ -110,7 +110,7 @@ void ViewConnection::draw()
         }
         else if (ImGui::Button("Disconnect"))
         {
-
+            EventManager::post(EventType::eEventPortClose);
             m_connected = false;
         }
 
