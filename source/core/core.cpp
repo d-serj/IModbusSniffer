@@ -5,6 +5,8 @@
 
 #include "core.h"
 
+#include <iostream>
+#include <iomanip>
 #include <thread>
 #include <functional>
 
@@ -25,6 +27,7 @@ Core::~Core()
     // Close the event thread
     m_core_stop = true;
     m_thread.join();
+    m_thread_serial.join();
 }
 
 void Core::start_thread()
@@ -34,6 +37,31 @@ void Core::start_thread()
         while (!this->m_core_stop)
         {
             EventManager::update();
+        }
+    }) };
+
+    m_thread_serial = std::thread{ ([this]()
+    {
+        while (!this->m_core_stop)
+        {
+            if (!this->comport.is_opened())
+            {
+                continue;
+            }
+
+            uint8_t buff[512] = { 0 };
+
+            int ret = this->comport.read(buff, sizeof(buff));
+            if ((ret > 0) && (ret < (sizeof(buff) - 1)))
+            {
+                for (int i = 0; i < ret; ++i)
+                {
+                    printf("%02X ", buff[i]);
+                    //std::cout << std::hex << buff[i];
+                }
+
+                std::cout << std::endl;
+            }
         }
     }) };
 }

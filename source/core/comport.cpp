@@ -42,6 +42,8 @@ void Comport::open(const std::string &port, uint32_t baud_rate)
         set_serial_default_opts(serial);
         serial.set_option(asio::serial_port_base::baud_rate(baud_rate));
 
+        m_nBaud = baud_rate;
+
         m_connected = serial.is_open();
 
 #if WIN32
@@ -49,6 +51,16 @@ void Comport::open(const std::string &port, uint32_t baud_rate)
         native_handle = serial.native_handle();
         GetCommTimeouts(native_handle, &timeouts);
         std::cout << timeouts.ReadIntervalTimeout << std::endl;
+
+        double dblBitsPerByte =
+            1 + m_byDataBits + m_byStopBits + ( m_byParity ? 1 : 0 );
+        timeouts.ReadIntervalTimeout =
+            (DWORD)ceil((3.5f * dblBitsPerByte / (double)m_nBaud * 1000.0f));
+        timeouts.ReadTotalTimeoutMultiplier  = 0;
+        timeouts.ReadTotalTimeoutConstant    = 0;
+        timeouts.WriteTotalTimeoutMultiplier = 0;
+        timeouts.WriteTotalTimeoutConstant   = 0;
+        SetCommTimeouts(native_handle, &timeouts);
 #endif // WIN32
     }
     catch(boost::system::system_error& e)
@@ -74,6 +86,27 @@ void Comport::close()
     }
 }
 
+int Comport::read(uint8_t *buff, uint32_t len)
+{
+    if (!m_connected)
+    {
+        return -1;
+    }
+
+    int ret = 0;
+
+    try
+    {
+        ret = serial.read_some(asio::buffer(buff, len));
+    }
+    catch(boost::system::system_error& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    return ret;
+}
+
 bool Comport::is_opened() const
 {
     return m_connected;
@@ -81,7 +114,7 @@ bool Comport::is_opened() const
 
 void Comport::set_serial_default_opts(boost::asio::serial_port &serial)
 {
-    serial.set_option(asio::serial_port_base::character_size(asio::serial_port_base::character_size(8)));
+    serial.set_option(asio::serial_port_base::character_size(asio::serial_port_base::character_size(m_byDataBits)));
     serial.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::even));
     serial.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
 }

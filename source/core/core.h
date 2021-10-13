@@ -23,6 +23,7 @@ public:
 
 private:
     std::thread m_thread;
+    std::thread m_thread_serial;
     bool m_core_stop = false;
     Comport comport;
 
