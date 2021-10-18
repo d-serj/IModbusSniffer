@@ -28,6 +28,7 @@ public:
     void close();
 
     int read(uint8_t *buff, uint32_t len);
+    int error();
 
 private:
     boost::asio::io_service io;

@@ -3,11 +3,6 @@
  * @brief  
  */
 
- /**
-  * @file   ui.cpp
-  * @brief
-  */
-
 #include "window.h"
 
 #include <stdio.h>
@@ -140,9 +135,12 @@ void Window::loop()
 
         if (should_exit)
         {
-            EventManager::post(EventType::eEvent_AppExit);
+            EventManager::post(EventManagerType::eEventManager_Core, EventType::eEvent_AppExit);
+            EventManager::stop(EventManagerType::eEventManager_UI);
             break;
         }
+
+        EventManager::wait_for_event(EventManagerType::eEventManager_UI, 100);
     }
 }
 

@@ -17,9 +17,9 @@ Core::Core()
     : comport()
 {
     // We can use std::bind here since comport will be destroyed within Core
-    EventManager::subscribe(EventType::eEvent_Connect,  std::bind(&Core::comport_connect, this, std::placeholders::_1));
-    EventManager::subscribe(EventType::eEventPortClose, std::bind(&Core::comport_close, this, std::placeholders::_1));
-    EventManager::subscribe(EventType::eEvent_AppExit,  std::bind(&Core::exit, this, std::placeholders::_1));
+    EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEvent_Connect,  std::bind(&Core::comport_connect, this, std::placeholders::_1));
+    EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEventPortClose, std::bind(&Core::comport_close, this, std::placeholders::_1));
+    EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEvent_AppExit,  std::bind(&Core::exit, this, std::placeholders::_1));
 }
 
 Core::~Core()
@@ -28,6 +28,7 @@ Core::~Core()
     m_core_stop = true;
     m_thread.join();
     m_thread_serial.join();
+    EventManager::stop(EventManagerType::eEventManager_Core);
 }
 
 void Core::start_thread()
@@ -36,14 +37,8 @@ void Core::start_thread()
     {
         while (!this->m_core_stop)
         {
-            EventManager::update();
-        }
-    }) };
+            EventManager::update(EventManagerType::eEventManager_Core);
 
-    m_thread_serial = std::thread{ ([this]()
-    {
-        while (!this->m_core_stop)
-        {
             if (!this->comport.is_opened())
             {
                 continue;
@@ -62,6 +57,14 @@ void Core::start_thread()
 
                 std::cout << std::endl;
             }
+        }
+    }) };
+
+    m_thread_serial = std::thread{ ([this]()
+    {
+        while (!this->m_core_stop)
+        {
+            
         }
     }) };
 }

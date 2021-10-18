@@ -94,7 +94,7 @@ void ViewConnection::draw()
         {
             std::shared_ptr<EventPortOpen> ptr_orig(new EventPortOpen{ comports.at(m_item_current), 57600 });
             std::shared_ptr<Event> ptr = std::dynamic_pointer_cast<Event>(ptr_orig);
-            EventManager::post(EventType::eEvent_Connect, ptr);
+            EventManager::post(EventManagerType::eEventManager_Core, EventType::eEvent_Connect, ptr);
             m_connected = true;
         }
 
@@ -110,7 +110,7 @@ void ViewConnection::draw()
         }
         else if (ImGui::Button("Disconnect"))
         {
-            EventManager::post(EventType::eEventPortClose);
+            EventManager::post(EventManagerType::eEventManager_Core, EventType::eEventPortClose);
             m_connected = false;
         }
 
