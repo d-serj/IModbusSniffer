@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 #include <thread>
+#include <chrono>
 #include <functional>
 
 #include <utilities/event/event.h>
@@ -27,7 +28,6 @@ Core::~Core()
     // Close the event thread
     m_core_stop = true;
     m_thread.join();
-    m_thread_serial.join();
     EventManager::stop(EventManagerType::eEventManager_Core);
 }
 
@@ -41,6 +41,7 @@ void Core::start_thread()
 
             if (!this->comport.is_opened())
             {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
                 continue;
             }
 
@@ -57,14 +58,6 @@ void Core::start_thread()
 
                 std::cout << std::endl;
             }
-        }
-    }) };
-
-    m_thread_serial = std::thread{ ([this]()
-    {
-        while (!this->m_core_stop)
-        {
-            
         }
     }) };
 }

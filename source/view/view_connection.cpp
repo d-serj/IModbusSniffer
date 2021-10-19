@@ -18,9 +18,11 @@
 #include <utilities/enumser.h>
 
 ViewConnection::ViewConnection()
-    : View("view.login")
+    : View("view.login"),
+    m_comports_formatted{  port_none, IM_ARRAYSIZE(port_none) - 1 },
+    m_comports{ m_comports_formatted }
 {
-
+    m_comports_found = scan_comports();
 }
 
 ViewConnection::~ViewConnection()
@@ -35,31 +37,6 @@ void ViewConnection::draw()
         return;
     }
 
-    const char port_none[] = "<none>";
-    std::string comports_formatted{ port_none, IM_ARRAYSIZE(port_none) };
-    std::vector<std::string> comports{port_none};
-    CEnumerateSerial::CPortsArray ports;
-
-    int ports_num = 0;
-    if (CEnumerateSerial::UsingGetCommPorts(ports))
-    {
-        for (const auto& port : ports)
-        {
-            // Create 
-            const std::string entity = fmt::format("COM{}", port);
-            comports.emplace_back(entity);
-            // Insert with \0 terminator to be drawn on combo box
-            comports_formatted += {entity.c_str(), entity.size() + 1};
-            ++ports_num;
-        }
-    }
-
-    if (m_item_current > ports_num)
-    {
-        m_item_current = 0;
-        m_connected    = false;
-    }
-
     const ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_NoCollapse
         | ImGuiWindowFlags_NoResize
@@ -72,19 +49,20 @@ void ViewConnection::draw()
 
     if (ImGui::Begin("COM Port settings", &View::get_view_open_state(), windowFlags))
     {
-        if (m_connected || (ports_num == 0))
+        if (m_connected || (m_comports_found == false))
         {
             ImGui::BeginDisabled();
         }
 
-        ImGui::Combo("Port name", &m_item_current, comports_formatted.c_str(), comports_formatted.size());
+        ImGui::Combo("Port name", &m_selected_comport, m_comports_formatted.c_str(), m_comports.size());
+        ImGui::Combo("Baud rate", &m_selected_baudrate, baud_rates, 5);
 
-        if (m_connected || (ports_num == 0))
+        if (m_connected || (m_comports_found == false))
         {
             ImGui::EndDisabled();
         }
 
-        if ((m_item_current == 0) || m_connected)
+        if ((m_selected_comport == 0) || m_connected)
         {
             ImGui::BeginDisabled();
             ImGui::Button("Connect");
@@ -92,7 +70,7 @@ void ViewConnection::draw()
         }
         else if (ImGui::Button("Connect"))
         {
-            std::shared_ptr<EventPortOpen> ptr_orig(new EventPortOpen{ comports.at(m_item_current), 57600 });
+            std::shared_ptr<EventPortOpen> ptr_orig(new EventPortOpen{ m_comports.at(m_selected_comport), 57600 });
             std::shared_ptr<Event> ptr = std::dynamic_pointer_cast<Event>(ptr_orig);
             EventManager::post(EventManagerType::eEventManager_Core, EventType::eEvent_Connect, ptr);
             m_connected = true;
@@ -136,4 +114,31 @@ void ViewConnection::draw_menu()
 void ViewConnection::draw_connection_window()
 {
 
+}
+
+bool ViewConnection::scan_comports()
+{
+    CEnumerateSerial::CPortsArray ports;
+
+    int ports_num = 0;
+    if (CEnumerateSerial::UsingGetCommPorts(ports))
+    {
+        for (const auto& port : ports)
+        {
+            const std::string entity = fmt::format("COM{}", port);
+            m_comports.emplace_back(entity);
+            // Insert with \0 terminator to be drawn on combo box
+            m_comports_formatted += { entity.c_str(), entity.size() + 1 };
+            ++ports_num;
+        }
+    }
+
+    // Reset connection flag if selected port has too high value
+    if (m_selected_comport > ports_num)
+    {
+        m_selected_comport = 0;
+        m_connected    = false;
+    }
+
+    return ports_num > 0;
 }

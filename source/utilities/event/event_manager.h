@@ -12,7 +12,7 @@
 
 #include "event.h"
 
-enum class EventManagerType { eEventManager_Core, eEventManager_UI };
+enum class EventManagerType : uint8_t { eEventManager_Core, eEventManager_UI };
 
 class EventManager
 {

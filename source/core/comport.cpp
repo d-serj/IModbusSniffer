@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <string>
 
 using namespace boost;
 
@@ -47,13 +48,13 @@ void Comport::open(const std::string &port, uint32_t baud_rate)
         m_connected = serial.is_open();
 
 #if WIN32
+        // Setup communication timeouts for Modbus RTU
         COMMTIMEOUTS timeouts;
         native_handle = serial.native_handle();
         GetCommTimeouts(native_handle, &timeouts);
-        std::cout << timeouts.ReadIntervalTimeout << std::endl;
 
         double dblBitsPerByte =
-            1 + m_byDataBits + m_byStopBits + ( m_byParity ? 1 : 0 );
+            1 + m_byDataBits + m_byStopBits + (m_byParity ? 1 : 0);
         timeouts.ReadIntervalTimeout =
             (DWORD)ceil((3.5f * dblBitsPerByte / (double)m_nBaud * 1000.0f));
         timeouts.ReadTotalTimeoutMultiplier  = 0;
@@ -65,7 +66,8 @@ void Comport::open(const std::string &port, uint32_t baud_rate)
     }
     catch(boost::system::system_error& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        serial_error = e.what();
+        std::cerr << "Error: " << serial_error << std::endl;
     }
 }
 
@@ -79,7 +81,8 @@ void Comport::close()
         }
         catch(boost::system::system_error& e)
         {
-            std::cerr << "Error: " << e.what() << std::endl;
+            serial_error = e.what();
+            std::cerr << "Error: " << serial_error << std::endl;
         }
 
         m_connected = false;
@@ -101,10 +104,16 @@ int Comport::read(uint8_t *buff, uint32_t len)
     }
     catch(boost::system::system_error& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        serial_error = e.what();
+        std::cerr << "Error: " << serial_error << std::endl;
     }
 
     return ret;
+}
+
+const std::string &Comport::error_code()
+{
+    return serial_error;
 }
 
 bool Comport::is_opened() const

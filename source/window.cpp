@@ -140,7 +140,7 @@ void Window::loop()
             break;
         }
 
-        EventManager::wait_for_event(EventManagerType::eEventManager_UI, 100);
+        EventManager::wait_for_event(EventManagerType::eEventManager_UI, 10);
     }
 }
 

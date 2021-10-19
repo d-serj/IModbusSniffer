@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdint>
 
-enum class EventType { eEvent_Connect, eEventPortClose, eEvent_AppExit };
+enum class EventType : uint8_t { eEvent_Connect, eEventPortClose, eEvent_AppExit };
 
 /**
  * @brief Base event class
