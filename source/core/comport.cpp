@@ -37,6 +37,8 @@ void Comport::open(const std::string &port, uint32_t baud_rate)
         return;
     }
 
+    serial_error.clear();
+
     try
     {
         serial.open(port);
@@ -111,7 +113,7 @@ int Comport::read(uint8_t *buff, uint32_t len)
     return ret;
 }
 
-const std::string &Comport::error_code()
+const std::string Comport::error_code()
 {
     return serial_error;
 }

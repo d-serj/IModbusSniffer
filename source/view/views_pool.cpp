@@ -8,15 +8,15 @@
 #include <vector>
 
 #include "view_connection.h"
+#include "view_error_popup.h"
 
 std::vector<View*> ViewsPool::views;
-static ViewsPool pool;
 
 ViewsPool::ViewsPool()
 {
     views.emplace_back(new ViewConnection);
+    views.emplace_back(new ViewPopup);
     // Register all new views here
-
 }
 
 ViewsPool::~ViewsPool()

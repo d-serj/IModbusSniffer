@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdint>
 
-enum class EventType : uint8_t { eEvent_Connect, eEventPortClose, eEvent_AppExit };
+enum class EventType : uint8_t { eEvent_Connect, eEventPortClose, eEvent_AppExit, eEvent_ShowErrorPopup };
 
 /**
  * @brief Base event class
@@ -33,4 +33,21 @@ private:
     std::string m_portname;
     uint32_t m_baudrate;
     char test[1024];
+};
+
+/**
+ * @brief EventPortOpen class is an event that passed login and password to the backend.
+ */
+class EventShowErrorPopup : public Event
+{
+public:
+    explicit EventShowErrorPopup(const std::string& popup_message)
+        : Event(), m_popup_msg(popup_message)
+    {
+    };
+
+    const std::string& get_popup_msg() const;
+
+private:
+    std::string m_popup_msg;
 };

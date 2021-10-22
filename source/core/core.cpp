@@ -66,6 +66,14 @@ void Core::comport_connect(std::shared_ptr<Event> event)
 {
     const std::shared_ptr<EventPortOpen> port = std::dynamic_pointer_cast<EventPortOpen>(event);
     this->comport.open(port->get_port_name(), port->get_baudrate());
+    const std::string msg = this->comport.error_code();
+
+    if (!msg.empty())
+    {
+        std::shared_ptr<EventShowErrorPopup> ptr_orig(new EventShowErrorPopup{ msg });
+        std::shared_ptr<Event> ptr = std::dynamic_pointer_cast<Event>(ptr_orig);
+        EventManager::post(EventManagerType::eEventManager_UI, EventType::eEvent_ShowErrorPopup, ptr);
+    }
 }
 
 void Core::comport_close(std::shared_ptr<Event> event)

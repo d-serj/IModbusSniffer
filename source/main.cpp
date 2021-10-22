@@ -9,10 +9,14 @@
 
 #include "window.h"
 
+#include <thread>
+#include <chrono>
+
 #include <core/core.h>
 
 int main(int, char**)
 {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     Core app;
     app.start_thread();
 

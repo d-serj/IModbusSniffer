@@ -189,7 +189,7 @@ void Window::draw_main_view()
 
 void Window::draw_views()
 {
-    for (auto &view : app_views.get_views())
+    for (auto &view : views_pool.get_pool())
     {
         view->draw();
     }
@@ -197,7 +197,7 @@ void Window::draw_views()
 
 void Window::draw_menus()
 {
-    for (auto& view : app_views.get_views())
+    for (auto& view : views_pool.get_pool())
     {
         view->draw_menu();
     }

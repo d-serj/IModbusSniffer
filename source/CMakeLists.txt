@@ -26,7 +26,7 @@ target_sources(
   view/view.cpp
   "view/view_connection.cpp"        "view/view_connection.h"
   "view/views_pool.h"               "view/views_pool.cpp"
-  "content.cpp"                     "content.h"
+  "view/view_error_popup.cpp"       "view/view_error_popup.h"
 
   "utilities/event/event_manager.h" "utilities/event/event_manager.cpp"
   "utilities/event/event.cpp"       "utilities/event/event.h"
@@ -36,7 +36,6 @@ target_sources(
   "core/comport.cpp"                "core/comport.h"
 )
 
-set(Boost_DEBUG 1)
 find_package(Boost REQUIRED)
 
 target_include_directories(

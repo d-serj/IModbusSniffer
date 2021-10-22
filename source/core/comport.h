@@ -27,8 +27,16 @@ public:
     void open(const std::string &port, uint32_t baud_rate);
     void close();
 
+    /**
+     * @brief Read Modbus packet from serial port
+     * 
+     * @param buff .. buffer where data will be stored
+     * @param len .. buffer length
+     * @return The number of bytes read
+     */
     int read(uint8_t *buff, uint32_t len);
-    const std::string &error_code();
+
+    const std::string error_code();
 
 private:
     boost::asio::io_service io;

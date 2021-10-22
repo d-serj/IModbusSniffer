@@ -13,7 +13,7 @@
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-#include "content.h"
+#include <view/views_pool.h>
 
 class Window
 {
@@ -29,9 +29,10 @@ private:
     void draw_views();
     void draw_menus();
 
-    Content app_views;
     GLFWwindow* window = nullptr;
     bool should_exit   = false;
+
+    ViewsPool views_pool;
 };
 
 

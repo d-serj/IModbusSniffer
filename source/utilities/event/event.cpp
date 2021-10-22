@@ -16,3 +16,8 @@ uint32_t EventPortOpen::get_baudrate() const
 {
     return this->m_baudrate;
 }
+
+const std::string& EventShowErrorPopup::get_popup_msg() const
+{
+    return this->m_popup_msg;
+}
