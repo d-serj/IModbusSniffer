@@ -90,5 +90,6 @@ if (MINGW)
     -static
     -static-libgcc
     -static-libstdc++
+    modbus-parser
   )
 endif()

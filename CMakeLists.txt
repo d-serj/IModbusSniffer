@@ -19,4 +19,5 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/third_party/fmt)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/third_party/spdlog)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/third_party/modbus-parser)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source)
