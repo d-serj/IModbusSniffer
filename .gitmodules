@@ -1,0 +1,3 @@
+[submodule "source/third_party/modbus-parser"]
+	path = source/third_party/modbus-parser
+	url = git@github.com:d-serj/modbus-parser.git
