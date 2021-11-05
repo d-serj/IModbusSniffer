@@ -11,8 +11,18 @@
 #include <chrono>
 #include <functional>
 
+#include <modbus.h>
 #include <utilities/event/event.h>
 #include <utilities/event/event_manager.h>
+
+static int on_slave_addr(modbus_parser* objPL_parser);
+static int on_function(modbus_parser* objPL_parser);
+static int on_addr(modbus_parser* objPL_parser);
+static int on_qty(modbus_parser* objPL_parser);
+static int on_data_len(modbus_parser* objPL_parser);
+static int on_data_end(modbus_parser* objPL_parser);
+static int on_crc_error(modbus_parser* objPL_parser);
+static int on_complete(modbus_parser* objPL_parser);
 
 Core::Core()
     : comport()
@@ -21,6 +31,18 @@ Core::Core()
     EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEvent_Connect,  std::bind(&Core::comport_connect, this, std::placeholders::_1));
     EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEventPortClose, std::bind(&Core::comport_close, this, std::placeholders::_1));
     EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEvent_AppExit,  std::bind(&Core::exit, this, std::placeholders::_1));
+
+    modbus_parser_init(&parser, MODBUS_RESPONSE);
+    modbus_parser_settings_init(&parser_settings);
+
+    parser_settings.on_slave_addr = on_slave_addr;
+    parser_settings.on_function   = on_function;
+    parser_settings.on_addr       = on_addr;
+    parser_settings.on_qty        = on_qty;
+    parser_settings.on_data_len   = on_data_len;
+    parser_settings.on_data_end   = on_data_end;
+    parser_settings.on_crc_error  = on_crc_error;
+    parser_settings.on_complete   = on_complete;
 }
 
 Core::~Core()
@@ -47,7 +69,7 @@ void Core::start_thread()
 
             uint8_t buff[512] = { 0 };
 
-            int ret = this->comport.read(buff, sizeof(buff));
+            const int ret = this->comport.read(buff, sizeof(buff));
             if ((ret > 0) && (ret < (sizeof(buff) - 1)))
             {
                 for (int i = 0; i < ret; ++i)
@@ -84,4 +106,44 @@ void Core::comport_close(std::shared_ptr<Event> event)
 void Core::exit(std::shared_ptr<Event> event)
 {
     // TODO clear all resources and exit
+}
+
+static int on_slave_addr(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_function(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_addr(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_qty(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_data_len(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_data_end(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_crc_error(modbus_parser* objPL_parser)
+{
+    return 0;
+}
+
+static int on_complete  (modbus_parser* objPL_parser)
+{
+    return 0;
 }

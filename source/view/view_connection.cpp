@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <cstdlib>
 
 #include <fmt/format.h>
 #include <imgui.h>
@@ -55,7 +56,9 @@ void ViewConnection::draw()
         }
 
         ImGui::Combo("Port name", &m_selected_comport, m_comports_formatted.c_str(), m_comports.size());
-        ImGui::Combo("Baud rate", &m_selected_baudrate, baud_rates, 5);
+        ImGui::Combo("Baud rate", &m_selected_baudrate, m_baud_rates, IM_ARRAYSIZE(m_baud_rates));
+
+
 
         if (m_connected || (m_comports_found == false))
         {
@@ -70,7 +73,7 @@ void ViewConnection::draw()
         }
         else if (ImGui::Button("Connect"))
         {
-            std::shared_ptr<EventPortOpen> ptr_orig(new EventPortOpen{ m_comports.at(m_selected_comport), 57600 });
+            std::shared_ptr<EventPortOpen> ptr_orig(new EventPortOpen{ m_comports.at(m_selected_comport), std::atoi(m_baud_rates[m_selected_baudrate]) });
             std::shared_ptr<Event> ptr = std::dynamic_pointer_cast<Event>(ptr_orig);
             EventManager::post(EventManagerType::eEventManager_Core, EventType::eEvent_Connect, ptr);
             m_connected = true;

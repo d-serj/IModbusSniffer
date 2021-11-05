@@ -9,6 +9,7 @@
 #include <thread>
 #include <memory>
 
+#include <modbus.h>
 #include <utilities/event/event.h>
 
 #include "comport.h"
@@ -25,6 +26,8 @@ private:
     std::thread m_thread;
     bool m_core_stop = false;
     Comport comport;
+    modbus_parser parser;
+    modbus_parser_settings parser_settings;
 
     /**
      * Event handlers.

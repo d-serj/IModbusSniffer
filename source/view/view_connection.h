@@ -9,6 +9,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include <utilities/event/event.h>
 
@@ -29,7 +30,7 @@ private:
     int m_selected_baudrate = 0;
     bool m_comports_found   = false;
 
-    static constexpr char *baud_rates[] = { "2400", "4800", "9600", "19200",  "38400", "57600", "115200" };
+    static constexpr char *m_baud_rates[] = { "2400", "4800", "9600", "19200",  "38400", "57600", "115200" };
     static constexpr char *port_none    = "<none>";
     std::string m_comports_formatted;
     std::vector<std::string> m_comports;
