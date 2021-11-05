@@ -36,8 +36,6 @@ target_sources(
   "core/comport.cpp"                "core/comport.h"
 )
 
-find_package(Boost REQUIRED)
-
 target_include_directories(
   ${TARGET_NAME} PRIVATE
   third_party/glfw-3.3.4.bin.WIN64/include
@@ -82,6 +80,7 @@ target_link_libraries(
   OpenGL::GL
   spdlog::spdlog_header_only
   fmt::fmt
+  modbus-parser
 )
 
 if (MINGW)
@@ -90,6 +89,5 @@ if (MINGW)
     -static
     -static-libgcc
     -static-libstdc++
-    modbus-parser
   )
 endif()

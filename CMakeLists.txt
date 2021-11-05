@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(TARGET_NAME "sm_admin_tool")
+set(TARGET_NAME "iModSniffer")
 
 project(${TARGET_NAME} C CXX)
 
@@ -16,6 +16,9 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 include(GNUInstallDirs)
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+
+set(Boost_DEBUG 1)
+find_package(Boost REQUIRED)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/third_party/fmt)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/third_party/spdlog)
