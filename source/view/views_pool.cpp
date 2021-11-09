@@ -9,6 +9,7 @@
 
 #include "view_connection.h"
 #include "view_error_popup.h"
+#include "view_modbus_log.h"
 
 std::vector<View*> ViewsPool::views;
 
@@ -16,6 +17,7 @@ ViewsPool::ViewsPool()
 {
     views.emplace_back(new ViewConnection);
     views.emplace_back(new ViewPopup);
+    views.emplace_back(new ViewModbusLog);
     // Register all new views here
 }
 
