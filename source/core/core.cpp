@@ -14,6 +14,9 @@
 #include <modbus.h>
 #include <utilities/event/event.h>
 #include <utilities/event/event_manager.h>
+#include <utilities/utils.h>
+
+#include <common/modbus_rtu.h>
 
 static int on_slave_addr(modbus_parser* objPL_parser);
 static int on_function(modbus_parser* objPL_parser);
@@ -43,6 +46,8 @@ Core::Core()
     parser_settings.on_data_end   = on_data_end;
     parser_settings.on_crc_error  = on_crc_error;
     parser_settings.on_complete   = on_complete;
+
+    std::cout << sizeof(modbus_rtu) << std::endl;
 }
 
 Core::~Core()
@@ -59,6 +64,7 @@ void Core::start_thread()
     {
         while (!this->m_core_stop)
         {
+            // Receive and process all the events
             EventManager::update(EventManagerType::eEventManager_Core);
 
             if (!this->comport.is_opened())
@@ -79,6 +85,9 @@ void Core::start_thread()
                 }
 
                 std::cout << std::endl;
+
+                modbus_parser_init(&parser, MODBUS_RESPONSE);
+                modbus_parser_execute(&parser, &parser_settings, buff, sizeof(buff));
             }
         }
     }) };
@@ -100,6 +109,7 @@ void Core::comport_connect(std::shared_ptr<Event> event)
 
 void Core::comport_close(std::shared_ptr<Event> event)
 {
+    UNUSED(event);
     this->comport.close();
 }
 
@@ -143,7 +153,7 @@ static int on_crc_error(modbus_parser* objPL_parser)
     return 0;
 }
 
-static int on_complete  (modbus_parser* objPL_parser)
+static int on_complete(modbus_parser* objPL_parser)
 {
     return 0;
 }

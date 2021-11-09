@@ -11,6 +11,7 @@
 
 #include <modbus.h>
 #include <utilities/event/event.h>
+#include <common/modbus_rtu.h>
 
 #include "comport.h"
 
@@ -28,6 +29,7 @@ private:
     Comport comport;
     modbus_parser parser;
     modbus_parser_settings parser_settings;
+    modbus_rtu* m_modbus_packet = nullptr;
 
     /**
      * Event handlers.
