@@ -27,7 +27,7 @@ public:
 private:
     bool m_connected        = false;
     int m_selected_comport  = 0;
-    int m_selected_baudrate = 0;
+    int m_selected_baudrate = 5; // Default baudrate from m_baud_rates is 57600
     bool m_comports_found   = false;
 
     static constexpr char *m_baud_rates[] = { "2400", "4800", "9600", "19200",  "38400", "57600", "115200" };

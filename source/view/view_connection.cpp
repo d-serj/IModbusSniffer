@@ -19,7 +19,7 @@
 #include <utilities/enumser.h>
 
 ViewConnection::ViewConnection()
-    : View("view.login"),
+    : View("view.connection"),
     m_comports_formatted{  port_none, IM_ARRAYSIZE(port_none) - 1 },
     m_comports{ m_comports_formatted }
 {
@@ -41,12 +41,11 @@ void ViewConnection::draw()
     const ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_NoCollapse
         | ImGuiWindowFlags_NoResize
+        | ImGuiWindowFlags_AlwaysAutoResize
         | ImGuiWindowFlags_NoNavFocus
         | ImGuiWindowFlags_NoBringToFrontOnFocus
         | ImGuiWindowFlags_NoScrollbar
         | ImGuiWindowFlags_NoScrollWithMouse;
-
-    ImGui::SetNextWindowSize(ImVec2(280, 220), ImGuiCond_Appearing);
 
     if (ImGui::Begin("COM Port settings", &View::get_view_open_state(), windowFlags))
     {
@@ -55,10 +54,11 @@ void ViewConnection::draw()
             ImGui::BeginDisabled();
         }
 
+        ImGui::SetNextItemWidth(150);
         ImGui::Combo("Port name", &m_selected_comport, m_comports_formatted.c_str(), m_comports.size());
+        ImGui::SetNextItemWidth(150);
         ImGui::Combo("Baud rate", &m_selected_baudrate, m_baud_rates, IM_ARRAYSIZE(m_baud_rates));
-
-
+        ImGui::Separator();
 
         if (m_connected || (m_comports_found == false))
         {
@@ -79,8 +79,6 @@ void ViewConnection::draw()
             m_connected = true;
         }
 
-        ImGui::SameLine();
-        ImGui::Separator();
         ImGui::SameLine();
 
         if (!m_connected)
@@ -103,9 +101,9 @@ void ViewConnection::draw()
 
 void ViewConnection::draw_menu()
 {
-    if (ImGui::BeginMenu("Connection"))
+    if (ImGui::BeginMenu("Settings"))
     {
-        if (ImGui::MenuItem("Connect to COM port", nullptr))
+        if (ImGui::MenuItem("Connection", nullptr))
         {
             View::get_view_open_state() = true;
         }
