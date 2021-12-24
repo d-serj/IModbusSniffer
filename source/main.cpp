@@ -10,6 +10,7 @@
 #include "window.h"
 
 #include <core/core.h>
+#include <utilities/event/event_manager.h>
 
 int main(int, char**)
 {
@@ -18,6 +19,8 @@ int main(int, char**)
 
     Window Ui;
     Ui.loop();
+
+    EventManager::stop(EventManagerType::eEventManager_Core);
 
     return 0;
 }

@@ -93,7 +93,7 @@ Window::Window()
         throw std::runtime_error("Failed to load ImGui font!");
     }
 
-    ImGui::GetStyle().WindowRounding = 0.0f;
+    ImGui::GetStyle().WindowRounding = 2.0f;
 }
 
 Window::~Window()

@@ -5,7 +5,10 @@
 
 #include "views_pool.h"
 
+#include <cassert>
 #include <vector>
+
+#include <common/modbus_log.h>
 
 #include "view_connection.h"
 #include "view_error_popup.h"
@@ -17,7 +20,8 @@ ViewsPool::ViewsPool()
 {
     views.emplace_back(new ViewConnection);
     views.emplace_back(new ViewPopup);
-    views.emplace_back(new ViewModbusLog);
+    assert(ModbusLog::modbus_log_get_instance());
+    views.emplace_back(new ViewModbusLog{ *ModbusLog::modbus_log_get_instance() });
     // Register all new views here
 }
 

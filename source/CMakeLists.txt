@@ -24,16 +24,20 @@ target_sources(
   window.cpp
   view/view.h
   view/view.cpp
-  "view/view_connection.cpp"        "view/view_connection.h"
-  "view/views_pool.h"               "view/views_pool.cpp"
-  "view/view_error_popup.cpp"       "view/view_error_popup.h"
+  "view/view_connection.cpp"          "view/view_connection.h"
+  "view/views_pool.h"                 "view/views_pool.cpp"
+  "view/view_error_popup.cpp"         "view/view_error_popup.h"
 
-  "utilities/event/event_manager.h" "utilities/event/event_manager.cpp"
-  "utilities/event/event.cpp"       "utilities/event/event.h"
-  "utilities/enumser.cpp"           "utilities/enumser.h"
+  "utilities/event/event_manager.cpp" "utilities/event/event_manager.h"
+  "utilities/event/event.cpp"         "utilities/event/event.h"
+  "utilities/enumser.cpp"             "utilities/enumser.h"
 
-  "core/core.h"                     "core/core.cpp"
-  "core/comport.cpp"                "core/comport.h"
+  "core/core.cpp"                     "core/core.h"                       
+  "core/comport.cpp"                  "core/comport.h"
+  "utilities/utils.h"
+  "view/view_modbus_log.cpp"          "view/view_modbus_log.h"
+  "common/modbus_log.cpp"               "common/modbus_log.h"
+  "utilities/observer.h"
 )
 
 target_include_directories(

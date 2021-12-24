@@ -9,9 +9,8 @@
 #include <thread>
 #include <memory>
 
-#include <modbus.h>
 #include <utilities/event/event.h>
-#include <common/modbus_rtu.h>
+#include <common/modbus_log.h>
 
 #include "comport.h"
 
@@ -22,14 +21,17 @@ public:
     ~Core();
 
     void start_thread();
+    friend Core* core_get_instance();
+
+protected:
+    std::shared_ptr<modbus_rtu> m_modbus_packet;
 
 private:
+    static Core* m_core_ptr;
     std::thread m_thread;
     bool m_core_stop = false;
     Comport comport;
-    modbus_parser parser;
-    modbus_parser_settings parser_settings;
-    modbus_rtu* m_modbus_packet = nullptr;
+    ModbusLog m_modbus_log;
 
     /**
      * Event handlers.

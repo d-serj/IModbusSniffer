@@ -5,8 +5,11 @@
 
 #include "core.h"
 
+#include <cassert>
+#include <array>
 #include <iostream>
 #include <iomanip>
+#include <memory>
 #include <thread>
 #include <chrono>
 #include <functional>
@@ -16,38 +19,20 @@
 #include <utilities/event/event_manager.h>
 #include <utilities/utils.h>
 
+#include <common/modbus_log.h>
 #include <common/modbus_rtu.h>
 
-static int on_slave_addr(modbus_parser* objPL_parser);
-static int on_function(modbus_parser* objPL_parser);
-static int on_addr(modbus_parser* objPL_parser);
-static int on_qty(modbus_parser* objPL_parser);
-static int on_data_len(modbus_parser* objPL_parser);
-static int on_data_end(modbus_parser* objPL_parser);
-static int on_crc_error(modbus_parser* objPL_parser);
-static int on_complete(modbus_parser* objPL_parser);
+Core* Core::m_core_ptr = nullptr;
 
 Core::Core()
-    : comport()
+    : comport(), m_modbus_log()
 {
     // We can use std::bind here since comport will be destroyed within Core
     EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEvent_Connect,  std::bind(&Core::comport_connect, this, std::placeholders::_1));
     EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEventPortClose, std::bind(&Core::comport_close, this, std::placeholders::_1));
     EventManager::subscribe(EventManagerType::eEventManager_Core, EventType::eEvent_AppExit,  std::bind(&Core::exit, this, std::placeholders::_1));
 
-    modbus_parser_init(&parser, MODBUS_RESPONSE);
-    modbus_parser_settings_init(&parser_settings);
-
-    parser_settings.on_slave_addr = on_slave_addr;
-    parser_settings.on_function   = on_function;
-    parser_settings.on_addr       = on_addr;
-    parser_settings.on_qty        = on_qty;
-    parser_settings.on_data_len   = on_data_len;
-    parser_settings.on_data_end   = on_data_end;
-    parser_settings.on_crc_error  = on_crc_error;
-    parser_settings.on_complete   = on_complete;
-
-    std::cout << sizeof(modbus_rtu) << std::endl;
+    m_core_ptr = this;
 }
 
 Core::~Core()
@@ -55,7 +40,7 @@ Core::~Core()
     // Close the event thread
     m_core_stop = true;
     m_thread.join();
-    EventManager::stop(EventManagerType::eEventManager_Core);
+    m_core_ptr = nullptr;
 }
 
 void Core::start_thread()
@@ -73,21 +58,19 @@ void Core::start_thread()
                 continue;
             }
 
-            uint8_t buff[512] = { 0 };
+            std::array<uint8_t, 512> buff;
 
-            const int ret = this->comport.read(buff, sizeof(buff));
+            const int ret = this->comport.read(buff.data(), buff.size());
             if ((ret > 0) && (ret < (sizeof(buff) - 1)))
             {
                 for (int i = 0; i < ret; ++i)
                 {
-                    printf("%02X ", buff[i]);
+                   // printf("%02X ", buff[i]);
                     //std::cout << std::hex << buff[i];
                 }
 
-                std::cout << std::endl;
-
-                modbus_parser_init(&parser, MODBUS_RESPONSE);
-                modbus_parser_execute(&parser, &parser_settings, buff, sizeof(buff));
+                printf("received size %d\n", ret);
+                m_modbus_log.set_raw_data(std::move(buff));
             }
         }
     }) };
@@ -115,45 +98,11 @@ void Core::comport_close(std::shared_ptr<Event> event)
 
 void Core::exit(std::shared_ptr<Event> event)
 {
-    // TODO clear all resources and exit
+    UNUSED(event);
+    this->comport.close();
 }
 
-static int on_slave_addr(modbus_parser* objPL_parser)
+Core* core_get_instance()
 {
-    return 0;
-}
-
-static int on_function(modbus_parser* objPL_parser)
-{
-    return 0;
-}
-
-static int on_addr(modbus_parser* objPL_parser)
-{
-    return 0;
-}
-
-static int on_qty(modbus_parser* objPL_parser)
-{
-    return 0;
-}
-
-static int on_data_len(modbus_parser* objPL_parser)
-{
-    return 0;
-}
-
-static int on_data_end(modbus_parser* objPL_parser)
-{
-    return 0;
-}
-
-static int on_crc_error(modbus_parser* objPL_parser)
-{
-    return 0;
-}
-
-static int on_complete(modbus_parser* objPL_parser)
-{
-    return 0;
+    return Core::m_core_ptr;
 }
